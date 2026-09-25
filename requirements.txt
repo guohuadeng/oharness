@@ -1,0 +1,2 @@
+# dsh 的必要库
+deepseek-harness-sdk
