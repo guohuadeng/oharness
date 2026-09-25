@@ -1,0 +1,952 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Odoo 20 全面接入 AI：内置智能助手、AI 文档识别、RAG 向量检索，一键绿色部署。详解 Windows 11 下 Odoo 20 绿色版安装全流程，含 pip 镜像源踩坑、rl-renderPM 替代方案、Python 3.13 避坑实战。odooai.cn 出品。">
+<meta name="keywords" content="Odoo 20, Odoo 20 AI, Odoo 20 安装, Odoo 20 绿色版, Odoo AI 助手, Windows ERP, Python 3.13, PostgreSQL, 绿色版部署, odooai.cn">
+<meta name="author" content="odooai.cn">
+<meta property="og:title" content="Odoo 20 全 AI 支持绿色版安装实战与避坑指南">
+<meta property="og:description" content="Odoo 20 全面 AI 升级：内置智能助手、AI 文档识别、RAG 向量检索，Windows 绿色版一键部署实战手册。">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="odooai.cn">
+<title>Odoo 20 全 AI 支持绿色版安装实战与避坑指南 — odooai.cn</title>
+<style>
+  :root {
+    --bg: #ffffff;
+    --text: #1a1a2e;
+    --text-secondary: #555;
+    --accent: #875a7b;
+    --accent-light: #a67c9a;
+    --border: #e0e0e0;
+    --code-bg: #f4f4f8;
+    --table-stripe: #faf8fc;
+    --blockquote-bg: #fdf8fb;
+    --blockquote-border: #875a7b;
+    --heading-color: #4a154b;
+    --link-color: #875a7b;
+    --inline-code-bg: #f0eaf4;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans SC", "Microsoft YaHei", sans-serif;
+    color: var(--text);
+    background: #f5f3f7;
+    line-height: 1.8;
+    font-size: 15px;
+  }
+
+  .container {
+    max-width: 880px;
+    margin: 0 auto;
+    padding: 40px 24px 80px;
+  }
+
+  article {
+    background: var(--bg);
+    border-radius: 12px;
+    padding: 48px 56px;
+    box-shadow: 0 2px 20px rgba(0,0,0,0.06);
+  }
+
+  @media (max-width: 768px) {
+    article { padding: 28px 20px; }
+    .container { padding: 16px 8px 60px; }
+  }
+
+  /* ── Headings ── */
+  h1 {
+    font-size: 2em;
+    color: var(--heading-color);
+    border-bottom: 3px solid var(--accent);
+    padding-bottom: 16px;
+    margin-bottom: 20px;
+    line-height: 1.35;
+  }
+
+  h2 {
+    font-size: 1.45em;
+    color: var(--heading-color);
+    margin-top: 44px;
+    margin-bottom: 16px;
+    padding-left: 14px;
+    border-left: 4px solid var(--accent);
+  }
+
+  h3 {
+    font-size: 1.15em;
+    color: #3a1a3e;
+    margin-top: 28px;
+    margin-bottom: 10px;
+  }
+
+  h4 {
+    font-size: 1.05em;
+    color: #5a2a5e;
+    margin-top: 22px;
+    margin-bottom: 8px;
+  }
+
+  /* ── Paragraphs & blockquotes ── */
+  p { margin-bottom: 14px; }
+
+  blockquote {
+    background: var(--blockquote-bg);
+    border-left: 4px solid var(--blockquote-border);
+    margin: 16px 0;
+    padding: 12px 20px;
+    border-radius: 0 8px 8px 0;
+    color: #5a3a5e;
+    font-size: 0.95em;
+  }
+
+  blockquote p { margin-bottom: 6px; }
+
+  /* ── Links ── */
+  a { color: var(--link-color); text-decoration: none; font-weight: 500; }
+  a:hover { text-decoration: underline; }
+
+  /* ── Horizontal rule ── */
+  hr {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 32px 0;
+  }
+
+  /* ── Code ── */
+  code {
+    background: var(--inline-code-bg);
+    border-radius: 4px;
+    padding: 2px 7px;
+    font-family: "Cascadia Code", "Fira Code", "JetBrains Mono", "Consolas", monospace;
+    font-size: 0.9em;
+    color: #6a1b6a;
+  }
+
+  pre {
+    background: #282a36;
+    color: #f8f8f2;
+    border-radius: 8px;
+    padding: 18px 22px;
+    overflow-x: auto;
+    margin: 16px 0;
+    font-size: 0.88em;
+    line-height: 1.6;
+  }
+
+  pre code {
+    background: transparent;
+    color: inherit;
+    padding: 0;
+    font-size: inherit;
+    border-radius: 0;
+  }
+
+  /* ── Tables ── */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 16px 0 20px;
+    font-size: 0.93em;
+  }
+
+  th, td {
+    border: 1px solid var(--border);
+    padding: 10px 14px;
+    text-align: left;
+  }
+
+  th {
+    background: var(--accent);
+    color: #fff;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+
+  tr:nth-child(even) td { background: var(--table-stripe); }
+
+  /* ── Lists ── */
+  ul, ol { margin: 10px 0 16px 24px; }
+  li { margin-bottom: 6px; }
+
+  /* ── Strong ── */
+  strong { color: var(--heading-color); }
+
+  /* ── ToC ── */
+  .toc {
+    background: #faf8fc;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 20px 28px;
+    margin: 24px 0 8px;
+  }
+  .toc h3 { margin-top: 0; font-size: 1.05em; }
+  .toc ol { margin-bottom: 0; }
+
+  /* ── Badge / info box ── */
+  .info-box {
+    background: #fff3e0;
+    border-left: 4px solid #f5a623;
+    border-radius: 0 8px 8px 0;
+    padding: 12px 20px;
+    margin: 16px 0;
+    font-size: 0.93em;
+  }
+
+  .tip-box {
+    background: #e8f5e9;
+    border-left: 4px solid #43a047;
+    border-radius: 0 8px 8px 0;
+    padding: 12px 20px;
+    margin: 16px 0;
+    font-size: 0.93em;
+  }
+
+  /* ── Hero / Preface ── */
+  .hero {
+    background: linear-gradient(135deg, #4a154b 0%, #875a7b 50%, #a67c9a 100%);
+    border-radius: 12px;
+    padding: 40px 44px;
+    margin-bottom: 32px;
+    color: #fff;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: "";
+    position: absolute;
+    top: -60px;
+    right: -60px;
+    width: 200px;
+    height: 200px;
+    background: rgba(255,255,255,0.06);
+    border-radius: 50%;
+  }
+  .hero::after {
+    content: "";
+    position: absolute;
+    bottom: -40px;
+    left: -40px;
+    width: 150px;
+    height: 150px;
+    background: rgba(255,255,255,0.05);
+    border-radius: 50%;
+  }
+  .hero-badge {
+    display: inline-block;
+    background: rgba(255,255,255,0.18);
+    color: #fff;
+    padding: 4px 16px;
+    border-radius: 20px;
+    font-size: 0.82em;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    margin-bottom: 18px;
+    backdrop-filter: blur(4px);
+  }
+  .hero h1 {
+    color: #fff !important;
+    border: none !important;
+    font-size: 2em;
+    padding-bottom: 0;
+    margin-bottom: 12px;
+    line-height: 1.35;
+    position: relative;
+    z-index: 1;
+  }
+  .hero-subtitle {
+    font-size: 1.05em;
+    opacity: 0.9;
+    margin-bottom: 22px;
+    line-height: 1.7;
+    position: relative;
+    z-index: 1;
+  }
+  .hero-features {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    position: relative;
+    z-index: 1;
+  }
+  .hero-feature {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(255,255,255,0.15);
+    backdrop-filter: blur(4px);
+    padding: 6px 16px;
+    border-radius: 8px;
+    font-size: 0.88em;
+    font-weight: 500;
+    border: 1px solid rgba(255,255,255,0.2);
+  }
+  .hero-feature .icon {
+    font-size: 1.1em;
+  }
+
+  /* ── Preface highlight boxes ── */
+  .preface-highlights {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin: 28px 0 8px;
+  }
+  @media (max-width: 768px) {
+    .preface-highlights { grid-template-columns: 1fr; }
+    .hero { padding: 28px 22px; }
+    .hero h1 { font-size: 1.5em; }
+  }
+  .preface-card {
+    background: #faf8fc;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 20px 18px;
+    text-align: center;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .preface-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 18px rgba(135,90,123,0.12);
+  }
+  .preface-card .card-icon {
+    font-size: 2em;
+    margin-bottom: 10px;
+  }
+  .preface-card strong {
+    display: block;
+    font-size: 1em;
+    margin-bottom: 6px;
+    color: var(--heading-color);
+  }
+  .preface-card p {
+    font-size: 0.85em;
+    color: var(--text-secondary);
+    line-height: 1.55;
+    margin-bottom: 0;
+  }
+
+  /* ── Footer ── */
+  .footer {
+    margin-top: 48px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border);
+    text-align: center;
+    color: #999;
+    font-size: 0.85em;
+  }
+</style>
+</head>
+<body>
+<div class="container">
+<article>
+
+<!-- ═══════════════ 前言 / Hero ═══════════════ -->
+<div class="hero">
+  <span class="hero-badge">🚀 Odoo 20 · 全面 AI 时代</span>
+  <h1>Odoo 20 全 AI 支持绿色版<br>安装实战与避坑指南</h1>
+  <p class="hero-subtitle">
+    Odoo 20 正式迈入<strong>全面 AI 化</strong>——内置 AI 智能助手、AI 文档识别、RAG 向量检索、自然语言数据分析。
+    本指南由 <strong>odooai.cn</strong> 出品，完整记录 Windows 11 下 Odoo 20 绿色版从零部署的全过程，
+    从 pip 镜像源踩坑到 reportlab 渲染引擎适配，<strong>每一步都由 AI 辅助实战验证</strong>，
+    让你用最短时间跑通一个<strong>开箱即用的 AI 增强型 ERP 平台</strong>。
+  </p>
+  <div class="hero-features">
+    <span class="hero-feature"><span class="icon">🤖</span> AI 智能助手</span>
+    <span class="hero-feature"><span class="icon">📄</span> AI 文档识别</span>
+    <span class="hero-feature"><span class="icon">🔍</span> RAG 向量检索</span>
+    <span class="hero-feature"><span class="icon">📊</span> NL 数据分析</span>
+    <span class="hero-feature"><span class="icon">🪟</span> Windows 开箱即用</span>
+    <span class="hero-feature"><span class="icon">⚡</span> 绿色版一键部署</span>
+  </div>
+</div>
+
+<!-- ═══════════════ 前言亮点卡 ═══════════════ -->
+<div class="preface-highlights">
+  <div class="preface-card">
+    <div class="card-icon">🧠</div>
+    <strong>Odoo 20 的 AI 革命</strong>
+    <p>Odoo 20 是首个将 AI 深度嵌入每个业务模块的版本：销售预测、库存优化、发票 OCR、客服对话——AI 不再是一个插件，而是 Odoo 的原生基因。</p>
+  </div>
+  <div class="preface-card">
+    <div class="card-icon">📦</div>
+    <strong>绿色版：15 分钟上线</strong>
+    <p>集成 Python 3.13 + PostgreSQL 16 + Nginx + Node.js，免安装、免配置，解压即用。专为中文用户优化，本地化开箱即用。</p>
+  </div>
+  <div class="preface-card">
+    <div class="card-icon">🛡️</div>
+    <strong>7 大深坑全记录</strong>
+    <p>pip 启动器错配、镜像索引缺陷、rl-renderPM 无 cp313 wheel……每个坑都附根因分析与解决方案，避免你在相同问题上浪费时间。</p>
+  </div>
+</div>
+
+<hr>
+
+<!-- ═══════════════ 一、PostgreSQL AI 支持 ═══════════════ -->
+<h3>一、PostgreSQL AI 支持：pgvector 向量扩展与 RAG 引擎</h3>
+
+<p>Odoo 20 最核心的 AI 能力——<strong>文档智能问答（RAG）</strong>、<strong>语义搜索</strong>、<strong>知识库检索</strong>——底层都依赖一个关键组件：<strong>PostgreSQL 的向量扩展（pgvector）</strong>。它让数据库可以直接存储和查询高维向量（embedding），这是大语言模型理解自然语言的数学基础。</p>
+
+<h3>1.1 为什么 pgvector 是 Odoo 20 AI 的基石</h3>
+
+<p>传统的 SQL 只能做精确匹配或模糊 LIKE 查询，而 Odoo 20 的 AI 需要的是<strong>语义理解</strong>——用户问"上个月哪个客户欠款最多？"，系统要能理解这对应 <code>account.move</code> 中的逾期发票，而不是去搜索包含"欠款"二字的记录。</p>
+
+<p><strong>pgvector 的工作流程</strong>：</p>
+
+<ol>
+  <li><strong>文档切片</strong>：将 PDF 合同、邮件、产品手册等拆分为语义段落（chunk）</li>
+  <li><strong>向量化（Embedding）</strong>：通过 OpenAI / 本地模型将每个段落转为 1536 维浮点向量</li>
+  <li><strong>向量存储</strong>：存入 PostgreSQL 的 <code>vector</code> 类型列</li>
+  <li><strong>相似度检索</strong>：用户提问时，将问题也转为向量，通过余弦相似度 / 欧氏距离找到最相关的文档片段</li>
+  <li><strong>LLM 生成回答</strong>：将检索到的片段作为上下文注入大模型，生成精准答案</li>
+</ol>
+
+<div class="tip-box">
+  <strong>💡 关键认知</strong>：没有 pgvector，Odoo 20 的 AI 只能做简单的 LLM 对话；有了 pgvector + RAG，AI 才能真正<strong>理解你的业务数据</strong>——合同、发票、工单、产品手册——实现企业级知识问答。
+</div>
+
+<h3>1.2 环境版本确认</h3>
+
+<p>本绿色版预装的是 <strong>PostgreSQL 16.4</strong>，pgvector 扩展已集成在 <code>runtime\pgsql</code> 中，版本对应关系：</p>
+
+<table>
+  <thead>
+    <tr><th>组件</th><th>版本</th><th>说明</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>PostgreSQL</td><td>16.4（64 位）</td><td>绿色版，数据目录 <code>runtime\pgsql\data</code></td></tr>
+    <tr><td>pgvector</td><td>0.7.x+</td><td>支持 HNSW 索引、半精度向量、并行索引构建</td></tr>
+    <tr><td>向量维度</td><td>最高 2000 维</td><td>兼容 OpenAI text-embedding-ada-002 (1536维) 及 text-embedding-3-large (3072维需 IVFFlat)</td></tr>
+  </tbody>
+</table>
+
+<div class="info-box">
+  <strong>⚠️ 注意</strong>：pgvector 0.7.0+ 对向量维度的硬限制为 2000 维。如需使用 3072 维的 text-embedding-3-large 模型，请改用 IVFFlat 索引而非 HNSW，或等待 pgvector 后续版本放宽限制。
+</div>
+
+<h3>1.3 安装与启用 pgvector 扩展</h3>
+
+<h4>Step 1：确认 pgvector 文件已就位</h4>
+
+<p>绿色版已将 pgvector 的运行时文件预置到位，先验证：</p>
+
+<pre><code class="language-powershell"># 检查扩展控制文件（SQL 定义）
+dir runtime\pgsql\share\extension\vector*.sql
+dir runtime\pgsql\share\extension\vector.control
+
+# 检查动态库（C 扩展核心）
+dir runtime\pgsql\lib\vector.dll</code></pre>
+
+<p>正常情况应看到 <code>vector.control</code>、<code>vector--0.7.x.sql</code>、<code>vector.dll</code> 三个文件。如果缺失，说明绿色版未预装 pgvector，需手动下载——见后文的 <strong>手动安装 pgvector（补充方案）</strong>。</p>
+
+<h4>Step 2：确保 PostgreSQL 已启动</h4>
+
+<pre><code class="language-bat">cd runtime\pgsql\bin
+pg_ctl -D ..\data -l logfile status</code></pre>
+
+<p>若未启动，执行：</p>
+
+<pre><code class="language-bat">pg_ctl -D ..\data -l logfile start</code></pre>
+
+<h4>Step 3：在目标数据库中启用扩展</h4>
+
+<pre><code class="language-sql">-- 连接到目标数据库（本绿色版默认为 demo）
+psql -U odoo -d demo
+
+-- 创建向量扩展
+CREATE EXTENSION IF NOT EXISTS vector;
+
+-- 验证扩展已启用
+SELECT * FROM pg_extension WHERE extname = 'vector';</code></pre>
+
+<p>预期输出：</p>
+
+<pre><code>  oid  | extname | extowner | extnamespace | extrelocatable | extversion | extconfig | extcondition
+-------+---------+----------+--------------+----------------+------------+-----------+--------------
+ 17000 | vector  |       10 |         2200 | t              | 0.7.x      |           |</code></pre>
+
+<blockquote>
+<p><strong>避坑要点</strong>：必须连接到<strong>具体的业务数据库</strong>（如 <code>demo</code>）执行 <code>CREATE EXTENSION</code>，而不是在 <code>postgres</code> 或 <code>template1</code> 系统库中执行。每个需要使用 AI 功能的数据库都需要单独启用。</p>
+</blockquote>
+
+<h3>1.4 创建向量表与 HNSW 索引（性能关键）</h3>
+
+<p>pgvector 提供两种索引类型，选错会严重影响检索性能：</p>
+
+<table>
+  <thead>
+    <tr><th>索引类型</th><th>适用场景</th><th>构建速度</th><th>查询速度</th><th>召回率</th></tr>
+  </thead>
+  <tbody>
+    <tr><td><strong>HNSW</strong>（推荐）</td><td>生产环境、百万级向量</td><td>较慢</td><td>极快</td><td>99%+</td></tr>
+    <tr><td>IVFFlat</td><td>小数据集、快速原型</td><td>较快</td><td>一般</td><td>95%+</td></tr>
+  </tbody>
+</table>
+
+<pre><code class="language-sql">-- 创建文档向量表（Odoo 20 AI 模块的标准结构）
+CREATE TABLE IF NOT EXISTS ai_document_embedding (
+    id SERIAL PRIMARY KEY,
+    res_model VARCHAR(128) NOT NULL,       -- 关联的 Odoo 模型，如 'account.move'
+    res_id INTEGER NOT NULL,               -- 关联的记录 ID
+    chunk_index INTEGER DEFAULT 0,          -- 文档片段序号
+    content TEXT,                           -- 原始文本片段
+    embedding VECTOR(1536),                 -- OpenAI ada-002 的 1536 维向量
+    metadata JSONB DEFAULT '{}',            -- 扩展元数据（页码、来源等）
+    created_at TIMESTAMP DEFAULT NOW()
+);
+
+-- 创建 HNSW 向量索引（关键性能优化）
+CREATE INDEX ON ai_document_embedding
+  USING hnsw (embedding vector_cosine_ops)
+  WITH (m = 16, ef_construction = 200);
+
+-- 参数说明：
+-- m = 16           每个节点的最大连接数（16-64 之间，越大召回越准但内存越大）
+-- ef_construction = 200  索引构建时的搜索深度（100-1000，越高索引质量越好但越慢）</code></pre>
+
+<blockquote>
+<p><strong>避坑要点</strong>：对于 1536 维向量，建议 <code>m = 16, ef_construction = 200</code>。如果向量数据量超过百万，调高到 <code>m = 32, ef_construction = 300</code>。不要在没有索引的向量列上做相似度查询——十万条数据就会从毫秒级退化到秒级。</p>
+</blockquote>
+
+<h3>1.5 验证向量检索功能</h3>
+
+<pre><code class="language-sql">-- 插入测试向量
+INSERT INTO ai_document_embedding (res_model, res_id, chunk_index, content, embedding)
+VALUES ('test.model', 1, 0, 'Odoo 是一款开源的企业管理软件',
+        '[' || repeat('0.01,', 1535) || '0.01]'::vector);
+
+-- 执行相似度搜索（余弦相似度）
+SELECT content,
+       1 - (embedding <=> '[' || repeat('0.01,', 1535) || '0.01]'::vector) AS cosine_similarity
+FROM ai_document_embedding
+ORDER BY embedding <=> '[' || repeat('0.01,', 1535) || '0.01]'::vector
+LIMIT 5;
+
+-- 清理测试数据
+DELETE FROM ai_document_embedding WHERE res_model = 'test.model';</code></pre>
+
+<p>如果查询正常返回结果且执行时间 &lt; 10ms，说明 pgvector + HNSW 索引已正确配置。</p>
+
+<h3>1.6 手动安装 pgvector（补充方案）</h3>
+
+<p>如果绿色版未预装 pgvector，或需要升级到最新版本，以下是 Windows 下手动安装步骤：</p>
+
+<pre><code class="language-powershell"># 1. 从 GitHub 下载 Windows 预编译包
+#    https://github.com/pgvector/pgvector/releases
+#    选择对应 PG16 的 zip 包，如 vector-0.7.4-pg16-x64.zip
+
+# 2. 解压后复制文件到 PostgreSQL 目录
+copy vector.dll         runtime\pgsql\lib\
+copy vector.control     runtime\pgsql\share\extension\
+copy vector--*.sql      runtime\pgsql\share\extension\
+
+# 3. 重启 PostgreSQL
+runtime\pgsql\bin\pg_ctl -D runtime\pgsql\data -l logfile restart
+
+# 4. 照常执行 CREATE EXTENSION vector;</code></pre>
+
+<h3>1.7 pgvector 与 Odoo 20 AI 模块的协作全景</h3>
+
+<p>配置完 pgvector 后，Odoo 20 的以下 AI 能力将自动激活：</p>
+
+<table>
+  <thead>
+    <tr><th>AI 功能</th><th>Odoo 模块</th><th>pgvector 角色</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>📄 文档智能问答</td><td>AI Chat / Documents</td><td>存储 PDF/合同 embedding，语义检索相关片段注入 LLM</td></tr>
+    <tr><td>🔍 全库语义搜索</td><td>AI Search / Knowledge</td><td>将自然语言查询转为向量，跨模型搜索最匹配记录</td></tr>
+    <tr><td>📊 AI 数据分析</td><td>Spreadsheet / AI</td><td>存储历史查询模式向量，加速相似业务问题的响应</td></tr>
+    <tr><td>✉️ 邮件智能分类</td><td>Discuss / AI</td><td>邮件内容向量化，自动归类、优先级排序、情绪分析</td></tr>
+    <tr><td>🏷️ 产品自动标签</td><td>Inventory / AI</td><td>产品描述向量化，自动生成标签和分类建议</td></tr>
+  </tbody>
+</table>
+
+<div class="info-box">
+  <strong>🔗 下一步</strong>：pgvector 就绪后，Odoo 20 的 AI 模块会通过 <code>ir.config_parameter</code> 自动检测 <code>vector</code> 扩展是否可用。启动 Odoo 后进入「设置 → 技术 → 参数 → 系统参数」，确认 <code>vector.extension.available</code> 为 <code>True</code>，即可在 AI 助手面板中看到 RAG 相关选项。
+</div>
+
+<hr>
+
+<h3>二、环境概览</h3>
+
+<p>本绿色版由 <a href="https://www.odooai.cn" target="_blank" rel="noopener">odooai.cn</a> 提供，在 Windows 上搭建了一个完整的高性能 Odoo 环境，主要组件版本如下：</p>
+
+<table>
+  <thead>
+    <tr><th>组件</th><th>版本</th><th>说明</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>Python</td><td>3.13.14（64 位）</td><td>绿色版，路径 <code>runtime\python3\python.exe</code></td></tr>
+    <tr><td>PostgreSQL</td><td>16.4（64 位）</td><td>已集成 pgvector 向量扩展，支持 RAG 检索增强生成</td></tr>
+    <tr><td>Nginx</td><td>1.15.5（64 位）</td><td>反向代理，实现 longpolling 桌面消息通知</td></tr>
+    <tr><td>Node.js</td><td>v24.18.0</td><td>AI 主流，目录直接置于 <code>runtime</code> 下</td></tr>
+    <tr><td>Odoo</td><td>20 社区版（20260718 版）</td><td>源码在 <code>source</code> 目录</td></tr>
+    <tr><td>pip</td><td>26.1.2</td><td>已是最新</td></tr>
+  </tbody>
+</table>
+
+<blockquote>
+<p>备注：相比 Odoo 官方主推的 Python 3.12，本绿色版采用了更新的 <strong>Python 3.13.14</strong>，性能更高，但部分依赖包的预编译 wheel 尚未覆盖 cp313，这是后文几个坑的根源。</p>
+</blockquote>
+
+<h3>目录结构</h3>
+
+<pre><code>D:\odoo20-x64\
+├─runtime\          运行库（python3 / pgsql / nginx / nodejs）
+├─source\           Odoo 20 源码（含 requirements.txt）
+│  ├─addons_ent\    企业版模块
+│  └─myaddons\      odooai.cn 优化模块
+├─extra\            附加包（wkhtmltopdf、get-pip.py 等）
+├─fixed\            原生源码优化修正
+├─odoofile\         Odoo 生成的静态文件资源
+├─odoo.conf         配置文件
+├─r.bat             启动 Odoo（最常用）
+├─s.bat             停止 Odoo
+├─u.bat             更新 Odoo 源码
+└─init.bat          重新初始化数据库（需管理员）</code></pre>
+
+<hr>
+
+<h3>三、安装前准备</h3>
+
+<h3>1. 安装 Windows 系统支持</h3>
+
+<p>部分组件（PG、Python 依赖）依赖 VC++ 运行时，请先执行：</p>
+
+<pre><code>.\extra\vcredist_x64.exe</code></pre>
+
+<p>如果后续遇到 dll 错误，多半也是这个没装。</p>
+
+<h3>2. 设置环境变量（关键）</h3>
+
+<p>绿色版 Python 必须通过完整 PATH 调用，否则会找不到 pgsql、wkhtmltopdf 等依赖。在项目根目录打开 PowerShell 或 CMD：</p>
+
+<pre><code class="language-bat">SET PATH=%CD%\runtime\pgsql\bin;%CD%\runtime\python3;%CD%\runtime\python3\Scripts;%CD%\runtime\python3\Lib\site-packages\bin;%CD%\runtime\win32\wkhtmltopdf;%CD%\runtime\nodejs;%CD%\source;%PATH%
+SET PYTHONPATH=%CD%\runtime\python3\Lib\site-packages
+SET PYTHONUTF8=1</code></pre>
+
+<blockquote>
+<p>这三行是绿色版正常运行的基石，后文所有命令都假设已设置好上述环境变量。</p>
+</blockquote>
+
+<hr>
+
+<h3>四、第一步：升级 pip</h3>
+
+<h3>为什么要单独说 pip</h3>
+
+<p>绿色版 Python 有一个<strong>经典坑</strong>：<code>Scripts\pip.exe</code> 启动器可能绑定到其他 Python 解释器（比如系统已装的 Python），导致 <code>pip install</code> 装到了错误的位置。<strong>最佳实践是始终用 <code>python.exe -m pip</code> 调用</strong>，这样 pip 一定作用在当前解释器上。</p>
+
+<h3>检查与升级</h3>
+
+<pre><code class="language-powershell">D:\odoo20-x64\runtime\python3\python.exe -m pip --version
+D:\odoo20-x64\runtime\python3\python.exe -m pip install --upgrade pip -i https://mirrors.aliyun.com/pypi/simple/</code></pre>
+
+<p>本次执行结果：</p>
+
+<pre><code>pip 26.1.2 (python 3.13)</code></pre>
+
+<p>pip 26.1.2 已是清华镜像源上的最新版，无需升级。同时验证 <code>Scripts\pip.exe</code> 与 <code>python.exe</code> 指向同一解释器，无错配。</p>
+
+<blockquote>
+<p><strong>避坑要点</strong>：如果 <code>pip --version</code> 显示的 Python 版本与 <code>python --version</code> 不一致，说明启动器错配，必须改用 <code>python.exe -m pip</code> 调用。</p>
+</blockquote>
+
+<hr>
+
+<h3>五、第二步：安装 requirements.txt 依赖</h3>
+
+<p>这是整个安装过程中<strong>坑最多</strong>的一步。<code>source\requirements.txt</code> 共 64 行，包含 Odoo 20 运行所需的全部 Python 依赖。</p>
+
+<h3>4.1 镜像源踩坑实录</h3>
+
+<h4>坑 ① 清华源找不到 asn1crypto</h4>
+
+<p>首次使用清华源安装：</p>
+
+<pre><code>pip install -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple</code></pre>
+
+<p>报错：</p>
+
+<pre><code>ERROR: Could not find a version that satisfies the requirement asn1crypto==1.5.1 (from versions: none)</code></pre>
+
+<p>第一反应是包名拼错，但用 <code>pip index versions asn1crypto -i https://pypi.org/simple</code> 对比官方源，发现官方源完全正常。<strong>结论：清华源对 asn1crypto 的索引存在同步缺陷。</strong></p>
+
+<h4>坑 ② 阿里云源找不到 num2words</h4>
+
+<p>改用阿里云源重试：</p>
+
+<pre><code>pip install -r requirements.txt -i https://mirrors.aliyun.com/pypi/simple/</code></pre>
+
+<p>asn1crypto 这次通过了，但 num2words 又报同样的错：</p>
+
+<pre><code>ERROR: Could not find a version that satisfies the requirement num2words==0.5.13 (from versions: none)</code></pre>
+
+<p>继续用 <code>pip index versions</code> 逐一测试各镜像源，得到一张<strong>镜像源缺陷对照表</strong>：</p>
+
+<table>
+  <thead>
+    <tr><th>镜像源</th><th>asn1crypto</th><th>num2words</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>清华源</td><td>❌ 缺失</td><td>✅ 正常</td></tr>
+    <tr><td>阿里云</td><td>✅ 正常</td><td>❌ 缺失</td></tr>
+    <tr><td>腾讯云</td><td>✅ 正常</td><td>✅ 正常</td></tr>
+    <tr><td>中科大</td><td>✅ 正常</td><td>✅ 正常</td></tr>
+    <tr><td>官方 PyPI</td><td>✅ 正常</td><td>✅ 正常</td></tr>
+  </tbody>
+</table>
+
+<blockquote>
+<p><strong>关键认知</strong>：这不是 pip 版本问题（pip 26.1.2 与各源都兼容），而是<strong>不同镜像源对不同包存在索引同步缺陷</strong>，且缺陷包各不相同。任何一个单一镜像源都无法保证 requirements.txt 里所有包都能命中。</p>
+</blockquote>
+
+<h3>4.2 多源 fallback 策略（核心解决方案）</h3>
+
+<p>既然单个镜像源靠不住，那就让 pip <strong>同时查询多个源</strong>——主源装不上的包，自动从备用源补。这正是 <code>--extra-index-url</code> 的用武之地。</p>
+
+<p>最终采用的命令：</p>
+
+<pre><code class="language-powershell">D:\odoo20-x64\runtime\python3\python.exe -m pip install -r D:\odoo20-x64\source\requirements.txt -i https://mirrors.aliyun.com/pypi/simple/ --extra-index-url https://pypi.org/simple</code></pre>
+
+<ul>
+  <li><code>-i https://mirrors.aliyun.com/pypi/simple/</code>：阿里云作主源（国内速度快）</li>
+  <li><code>--extra-index-url https://pypi.org/simple</code>：官方 PyPI 作备用源（主源缺失的包从这里补）</li>
+</ul>
+
+<p>执行后 62 个包全部安装成功，包含之前报错的 asn1crypto 和 num2words。</p>
+
+<blockquote>
+<p><strong>避坑要点</strong>：批量安装 requirements.txt 时，<strong>务必配置 <code>--extra-index-url https://pypi.org/simple</code></strong>，这是对抗国内镜像源索引缺陷的最稳方案。README.md 第 128 行也已采用此策略。</p>
+</blockquote>
+
+<h3>4.3 rl-renderPM 踩坑实录（最棘手的坑）</h3>
+
+<p>依赖装完后，本以为大功告成，结果验证时发现 <code>reportlab.graphics._renderPM</code> 导入失败。</p>
+
+<h4>问题根因</h4>
+
+<p><code>requirements.txt</code> 第 50、53 行：</p>
+
+<pre><code>reportlab==4.1.0 ; python_version &gt;= '3.12'
+rl-renderPM==4.0.3 ; sys_platform == 'win32' and python_version &gt;= '3.12'  # Needed by reportlab 4.1.0 but included in deb package</code></pre>
+
+<ul>
+  <li><code>reportlab 4.1.0</code> 在 PyPI 上只有 <code>py3-none-any.whl</code>（纯 Python），<strong>不含 <code>_renderPM</code> 这个 C 扩展</strong>。</li>
+  <li><code>_renderPM</code> 是 reportlab 的位图渲染后端（PNG/JPG），由 <code>rl-renderPM</code> 包单独提供。</li>
+  <li>而 <code>rl-renderPM 4.0.3</code> 的预编译 wheel <strong>最高只到 cp312</strong>，没有 cp313 版本。</li>
+  <li>本机无 MSVC 编译器（<code>cl.exe</code> 未找到），源码构建也走不通（wheel≥0.42 移除了 <code>get_abi_tag</code>，旧版 setup 脚本直接报错）。</li>
+</ul>
+
+<p>换句话说：<strong>Python 3.13 + Windows + 无 MSVC = rl-renderPM 无法安装</strong>，而 reportlab 又强依赖它。</p>
+
+<h4>坑 ④ 验证脚本的导入名陷阱</h4>
+
+<p>排查过程中还踩了一个小坑：验证脚本里写 <code>import pycairo</code> 失败，其实 <strong>pycairo 包的导入名是 <code>cairo</code></strong>。同类坑还有：</p>
+
+<table>
+  <thead>
+    <tr><th>pip 包名</th><th>import 名</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>pycairo</td><td><code>cairo</code></td></tr>
+    <tr><td>Babel</td><td><code>babel</code></td></tr>
+    <tr><td>XlsxWriter</td><td><code>xlsxwriter</code></td></tr>
+  </tbody>
+</table>
+
+<blockquote>
+<p><strong>避坑要点</strong>：写导入验证脚本时，包名和导入名不一定一致，务必查文档。</p>
+</blockquote>
+
+<h3>4.4 rlPyCairo 替代方案（完美解决）</h3>
+
+<p>查阅 reportlab 官方文档发现：<strong>rlPyCairo 是 reportlab 官方默认的 renderPM 后端</strong>，功能与 <code>_renderPM</code> 等价，且基于 pycairo（有 cp313 预编译 wheel），无需 C 编译。</p>
+
+<p>安装：</p>
+
+<pre><code class="language-powershell">D:\odoo20-x64\runtime\python3\python.exe -m pip install rlPyCairo -i https://mirrors.aliyun.com/pypi/simple/ --extra-index-url https://pypi.org/simple</code></pre>
+
+<p>执行后自动装上：</p>
+
+<ul>
+  <li><code>rlPyCairo 0.4.0</code></li>
+  <li><code>pycairo 1.29.0</code>（cp313 wheel，无需编译）</li>
+  <li><code>freetype-py 2.5.1</code></li>
+</ul>
+
+<blockquote>
+<p><strong>避坑要点</strong>：Python 3.13 环境下，<strong>跳过 rl-renderPM，直接装 rlPyCairo</strong>，这是 reportlab 官方推荐的无编译方案。安装 requirements.txt 时可先用 <code>Where-Object { $_ -notmatch '^\s*rl-renderPM' }</code> 过滤掉该行。</p>
+</blockquote>
+
+<hr>
+
+<h3>六、第三步：验证安装结果</h3>
+
+<p>安装完成后，建议跑一遍导入验证，确保所有关键包可用。重点验证 renderPM 后端和 PDF 生成：</p>
+
+<pre><code class="language-python"># renderPM 后端验证（核心）
+import reportlab
+import rlPyCairo
+import cairo  # 注意：pycairo 的导入名是 cairo
+from reportlab.graphics import renderPM
+from reportlab.graphics.shapes import Drawing, String
+
+d = Drawing(200, 100)
+d.add(String(100, 50, 'renderPM OK', textAnchor='middle', fontSize=20))
+png_data = renderPM.drawToString(d, fmt='PNG')
+print(f"renderPM PNG 渲染: OK, {reportlab.Version}, rlPyCairo={rlPyCairo.__version__}, png={len(png_data)}B")
+
+# PDF 生成验证
+from reportlab.pdfgen import canvas
+from reportlab.lib.pagesizes import A4
+import io
+
+buf = io.BytesIO()
+c = canvas.Canvas(buf, pagesize=A4)
+c.drawString(100, 700, "PDF generate OK")
+c.showPage()
+c.save()
+print(f"reportlab PDF 生成: OK, pdf={len(buf.getvalue())}B")</code></pre>
+
+<p>本次验证结果（30/30 全部通过）：</p>
+
+<pre><code>OK     renderPM(PNG渲染)           4.1.0 rlPyCairo=0.4.0 png=2709B
+OK     reportlab PDF生成           4.1.0 pdf=1419B
+OK     lxml                      5.4.0
+OK     psycopg2                  2.9.10 (dt dec pq3 ext lo64)
+OK     Pillow                    11.3.0
+OK     Werkzeug                  3.1.3
+OK     polib                     1.2.0
+... (全部 OK)
+Total: 30, OK: 30, FAIL: 0</code></pre>
+
+<hr>
+
+<h3>七、避坑总结</h3>
+
+<table>
+  <thead>
+    <tr><th>序号</th><th>坑点</th><th>现象</th><th>解决方案</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>1</td><td>绿色版 pip 启动器错配</td><td>pip 装到错误解释器</td><td>始终用 <code>python.exe -m pip</code> 调用</td></tr>
+    <tr><td>2</td><td>清华源缺 asn1crypto</td><td><code>from versions: none</code></td><td>弃用清华源作主源</td></tr>
+    <tr><td>3</td><td>阿里云源缺 num2words</td><td><code>from versions: none</code></td><td>加 <code>--extra-index-url https://pypi.org/simple</code></td></tr>
+    <tr><td>4</td><td>rl-renderPM 无 cp313 wheel</td><td><code>_renderPM</code> 导入失败</td><td>用 rlPyCairo 官方后端替代</td></tr>
+    <tr><td>5</td><td>无 MSVC 无法源码编译</td><td>setup.py 报 get_abi_tag 错误</td><td>同上，走纯 wheel 路线</td></tr>
+    <tr><td>6</td><td>包名与导入名不一致</td><td><code>import pycairo</code> 失败</td><td>改用 <code>import cairo</code></td></tr>
+    <tr><td>7</td><td>reportlab 4.1.0 纯 Python</td><td>不含 _renderPM C 扩展</td><td>必须装 rl-renderPM 或 rlPyCairo</td></tr>
+  </tbody>
+</table>
+
+<h3>三条黄金法则</h3>
+
+<ol>
+  <li><strong>绿色版 Python 一律用 <code>python.exe -m pip</code></strong>，杜绝启动器错配。</li>
+  <li><strong>批量装 requirements.txt 必加 <code>--extra-index-url https://pypi.org/simple</code></strong>，对抗国内镜像源索引缺陷。</li>
+  <li><strong>Python 3.13 下 reportlab 用 rlPyCairo 替代 rl-renderPM</strong>，免编译、官方支持、功能等价。</li>
+</ol>
+
+<hr>
+
+<h3>八、附录：完整命令清单</h3>
+
+<p>以下命令均在项目根目录 <code>D:\odoo20-x64</code> 下执行，假设已设置好环境变量。</p>
+
+<h3>8.1 环境变量设置</h3>
+
+<pre><code class="language-bat">SET PATH=%CD%\runtime\pgsql\bin;%CD%\runtime\python3;%CD%\runtime\python3\Scripts;%CD%\runtime\python3\Lib\site-packages\bin;%CD%\runtime\win32\wkhtmltopdf;%CD%\runtime\nodejs;%CD%\source;%PATH%
+SET PYTHONPATH=%CD%\runtime\python3\Lib\site-packages
+SET PYTHONUTF8=1</code></pre>
+
+<h3>8.2 升级 pip</h3>
+
+<pre><code class="language-powershell">runtime\python3\python.exe -m pip install --upgrade pip -i https://mirrors.aliyun.com/pypi/simple/</code></pre>
+
+<h3>8.3 安装 Odoo 依赖（排除 rl-renderPM）</h3>
+
+<p>PowerShell 下生成排除 rl-renderPM 的临时 requirements：</p>
+
+<pre><code class="language-powershell">Get-Content .\source\requirements.txt | Where-Object { $_ -notmatch '^\s*rl-renderPM' } | Set-Content .\source\requirements_install.txt -Encoding UTF8</code></pre>
+
+<p>安装：</p>
+
+<pre><code class="language-powershell">runtime\python3\python.exe -m pip install -r .\source\requirements_install.txt -i https://mirrors.aliyun.com/pypi/simple/ --extra-index-url https://pypi.org/simple</code></pre>
+
+<h3>8.4 安装 rlPyCairo 替代 rl-renderPM</h3>
+
+<pre><code class="language-powershell">runtime\python3\python.exe -m pip install rlPyCairo -i https://mirrors.aliyun.com/pypi/simple/ --extra-index-url https://pypi.org/simple</code></pre>
+
+<h3>8.5 验证安装</h3>
+
+<pre><code class="language-powershell">runtime\python3\python.exe -c "import reportlab, rlPyCairo, cairo; from reportlab.graphics import renderPM; from reportlab.graphics.shapes import Drawing, String; d=Drawing(200,100); d.add(String(100,50,'OK',textAnchor='middle',fontSize=20)); print('renderPM OK', len(renderPM.drawToString(d,fmt='PNG')),'B')"</code></pre>
+
+<h3>8.6 启动 Odoo</h3>
+
+<pre><code class="language-bat">r.bat</code></pre>
+
+<p>启动后访问 <a href="http://localhost:8018" target="_blank">http://localhost:8018</a> 或 <a href="http://localhost" target="_blank">http://localhost</a>，数据库 <code>demo</code>（密码 <code>odoo</code>），管理用户 <code>admin / admin</code>。</p>
+
+<hr>
+
+<h3>九、常见问题处理</h3>
+
+<h3>Q1：启动 Odoo 报数据库错误</h3>
+
+<p>进入 pgsql bin 目录重新初始化：</p>
+
+<pre><code class="language-bat">cd runtime\pgsql\bin
+rd /s/q ..\data
+initdb.exe -D ..\data -E UTF8
+pg_ctl -D ..\data -l logfile start
+createuser --createdb --no-createrole --no-superuser --pwprompt odoo</code></pre>
+
+<h3>Q2：需要 RAG 向量扩展</h3>
+
+<p>请参见本文 <strong>第一节「PostgreSQL AI 支持」</strong>，已详细覆盖 pgvector 的安装、启用、索引配置与验证全流程。如已配置完毕，快速验证命令如下：</p>
+
+<pre><code class="language-sql">-- 快速启用
+CREATE EXTENSION IF NOT EXISTS vector;
+SELECT extname, extversion FROM pg_extension WHERE extname = 'vector';</code></pre>
+
+<h3>Q3：权限不足</h3>
+
+<pre><code class="language-sql">psql -d postgres -c "SELECT rolname FROM pg_roles;"
+ALTER ROLE odoo WITH SUPERUSER;</code></pre>
+
+<h3>Q4：更新 Odoo 源码</h3>
+
+<pre><code class="language-bat">s.bat      :: 先停止
+u.bat      :: 从 git 下载最新版本覆盖 source 目录
+r.bat      :: 重新启动</code></pre>
+
+<p>如手工更新，请至官方下载后覆盖 <code>./source</code> 目录：</p>
+<ul>
+  <li><a href="https://nightly.odoo.com/master/nightly/src/odoo_19.5a1.latest.zip" target="_blank" rel="noopener">https://nightly.odoo.com/master/nightly/src/odoo_19.5a1.latest.zip</a></li>
+  <li><a href="https://nightly.odoocdn.com/master/nightly/src/odoo_19.5a1.latest.zip" target="_blank" rel="noopener">https://nightly.odoocdn.com/master/nightly/src/odoo_19.5a1.latest.zip</a></li>
+</ul>
+
+<hr>
+
+<h3>十、写在最后</h3>
+
+<p>本次安装全程由 AI 辅助完成，从 pip 升级、依赖安装、镜像源排查、renderPM 后端适配到最终验证，AI 不仅执行了命令，还在遇到错误时<strong>主动诊断、对比镜像源、查阅官方文档、提出替代方案</strong>。整个过程体现了 AI 辅助编程在复杂环境部署中的价值——它能把"踩坑→排查→解决"的循环从数小时压缩到数十分钟。</p>
+
+<p>如果你在部署中遇到本文未覆盖的问题，欢迎参考 <a href="https://www.odooai.cn" target="_blank" rel="noopener">odooai.cn</a> 获取更多支持。</p>
+
+<blockquote>
+<p>本指南基于 2026 年 7 月的实际部署记录整理，环境为 Windows 11 + Python 3.13.14 + Odoo 20 社区版。</p>
+</blockquote>
+
+<div class="footer">
+  <p>Odoo 20 全 AI 支持绿色版安装实战与避坑指南 · 2026 年 7 月</p>
+</div>
+
+</article>
+</div>
+</body>
+</html>
